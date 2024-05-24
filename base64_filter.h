@@ -1,7 +1,7 @@
 ///@file	base64_filter.h
-///	Base64ƒtƒBƒ‹ƒ^Eƒwƒbƒ_ƒtƒ@ƒCƒ‹
+///	Base64ãƒ•ã‚£ãƒ«ã‚¿ãƒ»ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«
 
-//¦boost”Å
+//â€»boostç‰ˆ
 
 #ifndef __base64_filter_H__
 #define __base64_filter_H__
@@ -22,31 +22,31 @@ namespace iostreams
 {
 //----------------------------------------------------------
 ///@class	base64_encoder
-///		Base64ƒGƒ“ƒR[ƒ_[
+///		Base64ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€ãƒ¼
 ///@author UeSyu
 ///@date   2013/11/19
 //----------------------------------------------------------
 class base64_encoder
 {
-	//encoder‚Ìó‘Ô
+	//encoderã®çŠ¶æ…‹
 	enum _State
 	{
 		None,
-		Read,	//“ü—Í
-		Write,	//o—Í
+		Read,	//å…¥åŠ›
+		Write,	//å‡ºåŠ›
 
 	};
 
 public:
-	///----[ ƒGƒ“ƒR[ƒh‚·‚é ]----
-	///@param	v	[in]	ƒGƒ“ƒR[ƒh‚·‚éƒf[ƒ^”z—ñ
-	///@param	e	[in]	ƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š—ñ‚ğ“ü‚ê‚é•Ï”
+	///----[ ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã™ã‚‹ ]----
+	///@param	v	[in]	ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã™ã‚‹ãƒ‡ãƒ¼ã‚¿é…åˆ—
+	///@param	e	[in]	ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	static void Encode(std::vector<boost::uint8_t> &v,std::string &e)
 	{
 		typedef boost::archive::iterators::base64_from_binary<boost::archive::iterators::transform_width<std::vector<boost::uint8_t>::const_iterator,6,8> > base64_text;
 		e.assign(base64_text(v.begin()),base64_text(v.end()));
 
-		int padding_count = 4-e.length()%4;
+		int padding_count = (4-e.length()%4)%4;
 		for (int i=0; i<padding_count; i++)
 		{
 			e += '=';
@@ -62,25 +62,25 @@ public:
 			boost::iostreams::closable_tag
 	{};
 
-	///----[ ƒRƒ“ƒXƒgƒ‰ƒNƒ^ ]----
+	///----[ ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ]----
 	base64_encoder() :
 		m_State(None)
 	{
 	}
 
-	///----[ ƒfƒXƒgƒ‰ƒNƒ^ ]----
+	///----[ ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ]----
 	virtual ~base64_encoder()
 	{
 	}
 
-	///----[ “Ç‚İ‚İ ]----
+	///----[ èª­ã¿è¾¼ã¿ ]----
 	template<typename Source>
 	std::streamsize read(Source& src, char_type* s, std::streamsize n)
 	{
 		assert(m_State!=Write);
 		if(m_State!=Read)
 		{
-		//“Ç‚İ‚İŠJn
+		//èª­ã¿è¾¼ã¿é–‹å§‹
 			BeginRead(src);
 			m_State=Read;
 		}
@@ -95,7 +95,7 @@ public:
 		return	-1;
 	}
 
-	///----[ ‘‚«‚İ ]----
+	///----[ æ›¸ãè¾¼ã¿ ]----
 	template<typename Sink>
 	std::streamsize write(Sink& snk, const char_type* s, std::streamsize n)
 	{
@@ -106,19 +106,19 @@ public:
 		return	n;
 	}
 
-	///----[ •Â‚¶‚é ]----
+	///----[ é–‰ã˜ã‚‹ ]----
 	template<typename Sink>
 	void close(Sink &snk, std::ios_base::openmode mode)
 	{
 		if(mode==std::ios_base::in)
 		{
-		//“ü—ÍƒXƒgƒŠ[ƒ€‚Ìê‡
+		//å…¥åŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å ´åˆ
 
 		} else {
-		//o—ÍƒXƒgƒŠ[ƒ€‚Ìê‡
+		//å‡ºåŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å ´åˆ
 			size_t	srcSize=m_vSrc.size();
 
-			//•ÏŠ·
+			//å¤‰æ›
 			std::string	dst;
 			Encode(m_vSrc,dst);
 			boost::iostreams::write(snk,(const char*)dst.c_str(),dst.size());
@@ -129,13 +129,13 @@ public:
 
 
 protected:
-	///----[ “Ç‚İ‚İŠJn ]----
+	///----[ èª­ã¿è¾¼ã¿é–‹å§‹ ]----
 	template<typename Source>
 	void BeginRead(Source& src)
 	{
-	//¦“WŠJƒtƒBƒ‹ƒ^‚Æ“¯‚¶‚æ‚¤‚É‚ ‚ç‚©‚¶‚ß‘S•”“Ç‚İ‚ñ‚Å‚¨‚­
+	//â€»å±•é–‹ãƒ•ã‚£ãƒ«ã‚¿ã¨åŒã˜ã‚ˆã†ã«ã‚ã‚‰ã‹ã˜ã‚å…¨éƒ¨èª­ã¿è¾¼ã‚“ã§ãŠã
 
-		//ƒf[ƒ^‚ğ“Ç‚İ‚Ş
+		//ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 		std::vector<boost::uint8_t>	vData;
 		const std::streamsize  size = boost::iostreams::default_device_buffer_size;
 		char	vBuffer[size];
@@ -151,40 +151,40 @@ protected:
 		}
 		size_t	srcSize=vData.size();
 
-		//•ÏŠ·
+		//å¤‰æ›
 		Encode(vData,m_DstString);
 		m_Count=0;
 	}
 protected:
-//======[ ƒƒ“ƒo•Ï” ]======
-	_State	m_State;	///<ó‘Ô
+//======[ ãƒ¡ãƒ³ãƒå¤‰æ•° ]======
+	_State	m_State;	///<çŠ¶æ…‹
 
-	std::streamsize	m_Count;	///<ƒoƒbƒtƒ@‚©‚ç“Ç‚İ‚ñ‚¾ƒoƒCƒg”
+	std::streamsize	m_Count;	///<ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰èª­ã¿è¾¼ã‚“ã ãƒã‚¤ãƒˆæ•°
 
-	std::string	m_DstString;	///<•ÏŠ·Œã‚Ì•¶š—ñ
-	std::vector<boost::uint8_t>	m_vSrc;	///<Œ³ƒf[ƒ^ó‚¯æ‚è—p
+	std::string	m_DstString;	///<å¤‰æ›å¾Œã®æ–‡å­—åˆ—
+	std::vector<boost::uint8_t>	m_vSrc;	///<å…ƒãƒ‡ãƒ¼ã‚¿å—ã‘å–ã‚Šç”¨
 };
 
 //----------------------------------------------------------
 ///@class	base64_decoder
-///		Base64ƒfƒR[ƒ_[
+///		Base64ãƒ‡ã‚³ãƒ¼ãƒ€ãƒ¼
 ///@author UeSyu
 ///@date   2013/11/20
 //----------------------------------------------------------
 class base64_decoder
 {
-	//encoder‚Ìó‘Ô
+	//encoderã®çŠ¶æ…‹
 	enum _State
 	{
 		None,
-		Read,	//“ü—Í
-		Write,	//o—Í
+		Read,	//å…¥åŠ›
+		Write,	//å‡ºåŠ›
 
 	};
 public:
-	///----[ ƒGƒ“ƒR[ƒh‚·‚é ]----
-	///@param	src	[in]	Base64ƒGƒ“ƒR[ƒh‚³‚ê‚Ä‚é•¶š
-	///@param	dst	[in]	ƒfƒR[ƒh‚³‚ê‚½ƒf[ƒ^‚ğ“ü‚ê‚é”z—ñ•Ï”
+	///----[ ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã™ã‚‹ ]----
+	///@param	src	[in]	Base64ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚Œã¦ã‚‹æ–‡å­—
+	///@param	dst	[in]	ãƒ‡ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚Œã‚‹é…åˆ—å¤‰æ•°
 	static void Decode(std::string &src,std::vector<boost::uint8_t> &dst)
 	{
 		typedef boost::archive::iterators::transform_width<boost::archive::iterators::binary_from_base64<std::string::const_iterator>, 8, 6,boost::uint8_t> base64_binary;
@@ -207,29 +207,29 @@ public:
 			boost::iostreams::closable_tag
 	{};
 
-	///----[ ƒRƒ“ƒXƒgƒ‰ƒNƒ^ ]----
+	///----[ ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ]----
 	base64_decoder() :
 		m_State(None)
 	{
 	}
 
-	///----[ ƒfƒXƒgƒ‰ƒNƒ^ ]----
+	///----[ ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ]----
 	virtual ~base64_decoder()
 	{
 	}
 
 
 	//--------------------------------------
-	//	ƒCƒ“ƒXƒ^ƒ“ƒX‚Ì‘€ì
+	//	ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®æ“ä½œ
 
-	///----[ “Ç‚İ‚İ ]----
+	///----[ èª­ã¿è¾¼ã¿ ]----
 	template<typename Source>
 	std::streamsize read(Source& src, char_type* s, std::streamsize n)
 	{
 		assert(m_State!=Write);
 		if(m_State!=Read)
 		{
-		//“Ç‚İ‚İŠJn
+		//èª­ã¿è¾¼ã¿é–‹å§‹
 			BeginRead(src);
 			m_State=Read;
 		}
@@ -244,7 +244,7 @@ public:
 		return	-1;
 	}
 
-	///----[ ‘‚«‚İ ]----
+	///----[ æ›¸ãè¾¼ã¿ ]----
 	template<typename Sink>
 	std::streamsize write(Sink& snk, const char_type* s, std::streamsize n)
 	{
@@ -255,19 +255,19 @@ public:
 		return	n;
 	}
 
-	///----[ •Â‚¶‚é ]----
+	///----[ é–‰ã˜ã‚‹ ]----
 	template<typename Sink>
 	void close(Sink &snk, std::ios_base::openmode mode)
 	{
 		if(mode==std::ios_base::in)
 		{
-		//“ü—ÍƒXƒgƒŠ[ƒ€‚Ìê‡
+		//å…¥åŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å ´åˆ
 
 		} else {
-		//o—ÍƒXƒgƒŠ[ƒ€‚Ìê‡
+		//å‡ºåŠ›ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å ´åˆ
 			size_t	srcSize=m_SrcString.size();
 
-			//•ÏŠ·
+			//å¤‰æ›
 			Decode(m_SrcString,m_vBuffer);
 
 			boost::iostreams::write(snk,(const char*)&m_vBuffer[0],m_vBuffer.size());
@@ -275,13 +275,13 @@ public:
 	}
 
 protected:
-	///----[ “Ç‚İ‚İŠJn ]----
+	///----[ èª­ã¿è¾¼ã¿é–‹å§‹ ]----
 	template<typename Source>
 	void BeginRead(Source& src)
 	{
-	//¦“WŠJƒtƒBƒ‹ƒ^‚Æ“¯‚¶‚æ‚¤‚É‚ ‚ç‚©‚¶‚ß‘S•”“Ç‚İ‚ñ‚Å‚¨‚­
+	//â€»å±•é–‹ãƒ•ã‚£ãƒ«ã‚¿ã¨åŒã˜ã‚ˆã†ã«ã‚ã‚‰ã‹ã˜ã‚å…¨éƒ¨èª­ã¿è¾¼ã‚“ã§ãŠã
 
-		//ƒf[ƒ^‚ğ“Ç‚İ‚Ş
+		//ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 		std::string	vData;
 		const std::streamsize  size = boost::iostreams::default_device_buffer_size;
 		char	vBuffer[size];
@@ -301,15 +301,15 @@ protected:
 		m_Count=0;
 	}
 protected:
-//======[ ƒƒ“ƒo•Ï” ]======
-	_State	m_State;	///<ó‘Ô
+//======[ ãƒ¡ãƒ³ãƒå¤‰æ•° ]======
+	_State	m_State;	///<çŠ¶æ…‹
 
-	std::streamsize	m_Count;	///<ƒoƒbƒtƒ@‚©‚ç“Ç‚İ‚ñ‚¾ƒoƒCƒg”
+	std::streamsize	m_Count;	///<ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰èª­ã¿è¾¼ã‚“ã ãƒã‚¤ãƒˆæ•°
 
-	std::vector<boost::uint8_t>	m_vBuffer;	///<•ÏŠ·Œã‚Ìƒf[ƒ^‚ğ“ü‚ê‚Ä‚¨‚­ƒoƒbƒtƒ@
-	std::streamsize	m_BufferSize;	///<•ÏŠ·Œã‚Ìƒf[ƒ^‚ğ“ü‚ê‚Ä‚¨‚­ƒoƒbƒtƒ@‚ÌƒTƒCƒY
+	std::vector<boost::uint8_t>	m_vBuffer;	///<å¤‰æ›å¾Œã®ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚Œã¦ãŠããƒãƒƒãƒ•ã‚¡
+	std::streamsize	m_BufferSize;	///<å¤‰æ›å¾Œã®ãƒ‡ãƒ¼ã‚¿ã‚’å…¥ã‚Œã¦ãŠããƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º
 
-	std::string	m_SrcString;	///<•ÏŠ·Œ³‚Ì•¶š—ñ•Û‘¶—pƒoƒbƒtƒ@
+	std::string	m_SrcString;	///<å¤‰æ›å…ƒã®æ–‡å­—åˆ—ä¿å­˜ç”¨ãƒãƒƒãƒ•ã‚¡
 
 };
 
